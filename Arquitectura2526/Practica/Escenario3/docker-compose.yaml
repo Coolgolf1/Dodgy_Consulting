@@ -1,0 +1,78 @@
+version: '3.8'
+
+services:
+
+  namenode:
+    build: ./hadoop
+    container_name: namenode
+    hostname: namenode
+    environment:
+      - HADOOP_NODE=namenode
+    ports:
+      - "9870:9870"   # Hadoop Namenode UI
+      - "9000:9000"   # HDFS port
+    networks:
+      - cluster
+
+  datanode:
+    build: ./hadoop
+    container_name: datanode
+    environment:
+      - HADOOP_NODE=datanode
+    depends_on:
+      - namenode
+    ports:
+      - "9864:9864"   # Datanode UI
+    networks:
+      - cluster
+
+  spark-master:
+    build: ./spark
+    container_name: spark-master
+    environment:
+      - SPARK_ROLE=master
+    ports:
+      - "7077:7077"   # Spark Master port
+      - "8080:8080"   # Spark Master UI
+    volumes:
+      - ./notebooks:/home/jovyan/work
+    depends_on:
+      - namenode
+    networks:
+      - cluster
+
+  spark-worker:
+    build: ./spark
+    container_name: spark-worker
+    environment:
+      - SPARK_ROLE=worker
+    volumes:
+      - ./notebooks:/home/jovyan/work
+    depends_on:
+      - spark-master
+    ports:
+      - "8081:8081"   # Spark Worker UI
+    networks:
+      - cluster
+
+  jupyter:
+    build: ./jupyter
+    container_name: jupyter
+    user: "1000:100"
+    ports:
+      - "8888:8888"
+    volumes:
+      - ./notebooks:/home/jovyan/work
+    environment:
+      - SPARK_MASTER=spark://spark-master:7077
+      - JAVA_HOME=/usr/lib/jvm/java-11-openjdk-arm64
+      - SPARK_HOME=/opt/spark
+      - PASSWORD=admin
+      - JUPYTER_TOKEN=admin
+    depends_on:
+      - spark-master
+    networks:
+      - cluster
+
+networks:
+  cluster:
