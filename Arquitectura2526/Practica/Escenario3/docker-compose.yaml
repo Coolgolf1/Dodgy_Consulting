@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
 
   namenode:
@@ -9,8 +7,8 @@ services:
     environment:
       - HADOOP_NODE=namenode
     ports:
-      - "9870:9870"   # Hadoop Namenode UI
-      - "9000:9000"   # HDFS port
+      - "9870:9870"
+      - "9000:9000"
     networks:
       - cluster
 
@@ -22,7 +20,7 @@ services:
     depends_on:
       - namenode
     ports:
-      - "9864:9864"   # Datanode UI
+      - "9864:9864"
     networks:
       - cluster
 
@@ -32,8 +30,8 @@ services:
     environment:
       - SPARK_ROLE=master
     ports:
-      - "7077:7077"   # Spark Master port
-      - "8080:8080"   # Spark Master UI
+      - "7077:7077"
+      - "8080:8080"
     volumes:
       - ./notebooks:/home/jovyan/work
     depends_on:
@@ -41,9 +39,9 @@ services:
     networks:
       - cluster
 
-  spark-worker:
+  spark-worker-1:
     build: ./spark
-    container_name: spark-worker
+    container_name: spark-worker-1
     environment:
       - SPARK_ROLE=worker
     volumes:
@@ -51,9 +49,55 @@ services:
     depends_on:
       - spark-master
     ports:
-      - "8081:8081"   # Spark Worker UI
+      - "8081:8081"
+    cpuset: "0"  # Limita a CPU 0
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 2g
     networks:
       - cluster
+
+  spark-worker-2:
+     build: ./spark
+     container_name: spark-worker-2
+     environment:
+       - SPARK_ROLE=worker
+     volumes:
+       - ./notebooks:/home/jovyan/work
+     depends_on:
+       - spark-master
+     ports:
+       - "8082:8081"
+     cpuset: "1"
+     deploy:
+       resources:
+         limits:
+           cpus: "1.0"
+           memory: 2g
+     networks:
+       - cluster
+
+  spark-worker-3:
+     build: ./spark
+     container_name: spark-worker-3
+     environment:
+       - SPARK_ROLE=worker
+     volumes:
+       - ./notebooks:/home/jovyan/work
+     depends_on:
+       - spark-master
+     ports:
+       - "8083:8081"
+     cpuset: "0"
+     deploy:
+       resources:
+         limits:
+           cpus: "1.0"
+           memory: 2g
+     networks:
+       - cluster
 
   jupyter:
     build: ./jupyter

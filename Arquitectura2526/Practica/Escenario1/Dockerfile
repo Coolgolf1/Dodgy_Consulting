@@ -1,5 +1,11 @@
-FROM python:3.9.7-slim
+FROM python:3.9-slim
 
-RUN pip install --no-cache-dir -U 'ray[default] @ https://s3-us-west-2.amazonaws.com/ray-wheels/latest/ray-2.0.0.dev0-cp39-cp39-manylinux2014_x86_64.whl'
+# Instalar dependencias del sistema
+RUN apt-get update && apt-get install -y gcc curl && apt-get clean
 
-CMD ["bash", "-c", "ray start --head --num-cpus 1 --dashboard-host 0.0.0.0 --include-dashboard true --block"]
+# Instalar Ray versión estable
+#RUN pip install --no-cache-dir ray[default]==2.10.0
+RUN pip install --no-cache-dir ray[default]==2.47.1
+
+CMD ["bash", "-c", "ray start --head --dashboard-host 0.0.0.0 --include-dashboard true --block"]
+
