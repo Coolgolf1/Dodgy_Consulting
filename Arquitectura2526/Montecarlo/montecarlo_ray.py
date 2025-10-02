@@ -44,10 +44,6 @@ import argparse
 def main() -> None:
     parser = argparse.ArgumentParser()
 
-
-def main() -> None:
-    parser = argparse.ArgumentParser()
-
     parser.add_argument("n", type=int,
                         help="Number of samples for Monte Carlo simulation.")
     parser.add_argument("n", type=int,
