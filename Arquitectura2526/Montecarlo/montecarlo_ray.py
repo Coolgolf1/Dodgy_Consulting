@@ -44,12 +44,25 @@ import argparse
 def main() -> None:
     parser = argparse.ArgumentParser()
 
+
+def main() -> None:
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument("n", type=int,
+                        help="Number of samples for Monte Carlo simulation.")
     parser.add_argument("n", type=int,
                         help="Number of samples for Monte Carlo simulation.")
 
     args = parser.parse_args()
+    args = parser.parse_args()
 
     ray.init()
+    ray.init()
+
+    n_samples = args.n
+    estimate_remote = estimate_pi.remote(n_samples)
+    pi = ray.get(estimate_remote)
+    print(pi)
 
     n_samples = args.n
     estimate_remote = estimate_pi.remote(n_samples)
@@ -59,6 +72,14 @@ def main() -> None:
 
 @ray.remote
 def estimate_pi(n_samples: int) -> float:
+    """Estimates pi from Monte Carlo simulation.
+
+    Args:
+        n_samples (int): Number of random samples to generate.
+
+    Returns:
+        float: Estimate of pi.
+    """
     """Estimates pi from Monte Carlo simulation.
 
     Args:
@@ -81,6 +102,10 @@ def estimate_pi(n_samples: int) -> float:
 
 
 if __name__ == "__main__":
+    try:
+        main()
+    except Exception as err:
+        raise Exception(f"Error in runtime: {err}.")
     try:
         main()
     except Exception as err:
