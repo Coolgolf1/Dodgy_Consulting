@@ -64,9 +64,10 @@ def main() -> None:
 
         start_time = perf_counter()
 
-        futures = [estimate_pi.remote(sample//n_tasks)
+        futures = [get_points_in_circle.remote(sample//n_tasks)
                    for _ in range(n_tasks)]
-        pi = sum(ray.get(futures))/len(futures)
+
+        pi = 4*sum(futures)/sample
 
         end_time = perf_counter()
 
@@ -77,14 +78,14 @@ def main() -> None:
 
 
 @ray.remote
-def estimate_pi(n_samples: int) -> float:
-    """Estimates pi from Monte Carlo simulation.
+def get_points_in_circle(n_samples: int) -> int:
+    """Get points in circle using Monte Carlo simulation.
 
     Args:
         n_samples (int): Number of random samples to generate.
 
     Returns:
-        float: Estimate of pi.
+        float: Number of points.
     """
     n_inside = 0
     for _ in range(n_samples):
@@ -94,9 +95,7 @@ def estimate_pi(n_samples: int) -> float:
         if x**2 + y**2 <= 1:
             n_inside += 1
 
-    pi = 4 * n_inside / n_samples
-
-    return pi
+    return n_inside
 
 
 if __name__ == "__main__":
