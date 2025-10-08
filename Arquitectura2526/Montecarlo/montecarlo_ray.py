@@ -83,7 +83,7 @@ def main() -> None:
     plt.plot(samples, results)
     plt.xlabel("Samples")
     plt.ylabel("Time (s)")
-    plt.savefig("./../Practica/Escenario1/figs")
+    plt.savefig(f"./../Practica/Escenario1/figs/{n_tasks}.png")
 
     ray.shutdown()
 
