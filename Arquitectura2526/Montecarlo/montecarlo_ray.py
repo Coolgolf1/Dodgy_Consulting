@@ -35,11 +35,12 @@ Date:         2025-10-02
 ======================================================================
 """
 
-
+import os
 import random
 import ray
 import argparse
 from time import perf_counter
+from dotenv import load_dotenv
 
 
 def main() -> None:
@@ -49,7 +50,11 @@ def main() -> None:
 
     args = parser.parse_args()
 
-    ray.init(address="ray://localhost:10001")
+    load_dotenv("./Arquitectura2526/Practica/Escenario1/.env")
+
+    port = os.getenv("HEADNODEPORT")
+
+    ray.init(address=f"ray://localhost:{port}")
 
     n_tasks = args.t
     samples = [5000000, 10000000, 50000000]
