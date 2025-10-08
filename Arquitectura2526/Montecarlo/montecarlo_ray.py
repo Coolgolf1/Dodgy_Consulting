@@ -39,22 +39,37 @@ Date:         2025-10-02
 import random
 import ray
 import argparse
+from numpy import mean
+from time import perf_counter
 
 
 def main() -> None:
     parser = argparse.ArgumentParser()
 
-    parser.add_argument("n", type=int,
-                        help="Number of samples for Monte Carlo simulation.")
+    parser.add_argument("t", type=int, help="Number of tasks for Ray.")
 
     args = parser.parse_args()
 
     ray.init()
 
-    n_samples = args.n
-    estimate_remote = estimate_pi.remote(n_samples)
-    pi = ray.get(estimate_remote)
-    print(pi)
+    n_tasks = args.t
+    samples = [5000000, 10000000, 50000000]
+
+    for sample in samples:
+        print(f"===== Samples: {sample} | Tasks: {n_tasks} =====")
+
+        start_time = perf_counter()
+
+        futures = [estimate_pi.remote(sample//n_tasks)
+                   for _ in range(n_tasks)]
+        pi = mean(ray.get(futures))
+
+        end_time = perf_counter()
+
+        print(f"Pi: {pi}")
+        print(f"Time taken: {end_time - start_time}")
+
+    ray.shutdown()
 
 
 @ray.remote
