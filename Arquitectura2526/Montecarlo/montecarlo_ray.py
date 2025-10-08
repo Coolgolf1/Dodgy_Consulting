@@ -56,7 +56,7 @@ def main() -> None:
 
     print(port)
 
-    # ray.init(address=f"ray://localhost:{port}")
+    ray.init(address=f"ray://localhost:{port}")
 
     n_tasks = args.t
     samples = [5000000, 10000000, 50000000]
