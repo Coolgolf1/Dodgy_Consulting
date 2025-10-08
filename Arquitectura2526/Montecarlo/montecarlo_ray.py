@@ -39,7 +39,6 @@ Date:         2025-10-02
 import random
 import ray
 import argparse
-from numpy import mean
 from time import perf_counter
 
 
@@ -62,7 +61,7 @@ def main() -> None:
 
         futures = [estimate_pi.remote(sample//n_tasks)
                    for _ in range(n_tasks)]
-        pi = mean(ray.get(futures))
+        pi = sum(ray.get(futures))/len(futures)
 
         end_time = perf_counter()
 
