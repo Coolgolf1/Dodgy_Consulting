@@ -50,11 +50,13 @@ def main() -> None:
 
     args = parser.parse_args()
 
-    load_dotenv("./Arquitectura2526/Practica/Escenario1/.env")
+    load_dotenv("./../Practica/Escenario1/.env")
 
     port = os.getenv("HEADNODEPORT")
 
-    ray.init(address=f"ray://localhost:{port}")
+    print(port)
+
+    # ray.init(address=f"ray://localhost:{port}")
 
     n_tasks = args.t
     samples = [5000000, 10000000, 50000000]
