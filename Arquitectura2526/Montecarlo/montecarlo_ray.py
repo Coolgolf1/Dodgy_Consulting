@@ -41,6 +41,7 @@ import ray
 import argparse
 from time import perf_counter
 from dotenv import load_dotenv
+import matplotlib.pyplot as plt
 
 
 def main() -> None:
@@ -58,6 +59,7 @@ def main() -> None:
 
     n_tasks = args.t
     samples = [5000000, 10000000, 50000000]
+    results = []
 
     for sample in samples:
         print(f"===== Samples: {sample} | Tasks: {n_tasks} =====")
@@ -73,6 +75,15 @@ def main() -> None:
 
         print(f"Pi: {pi}")
         print(f"Time taken: {end_time - start_time}")
+
+        results.append(pi)
+
+    plt.figure()
+    plt.title(f"{n_tasks}")
+    plt.plot(samples, results)
+    plt.xlabel("Samples")
+    plt.ylabel("Time (s)")
+    plt.savefig("./../Practica/Escenario1/figs")
 
     ray.shutdown()
 
