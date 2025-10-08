@@ -54,8 +54,6 @@ def main() -> None:
 
     port = os.getenv("HEADNODEPORT")
 
-    print(port)
-
     ray.init(address=f"ray://localhost:{port}")
 
     n_tasks = args.t
@@ -69,7 +67,7 @@ def main() -> None:
         futures = [get_points_in_circle.remote(sample//n_tasks)
                    for _ in range(n_tasks)]
 
-        pi = 4*sum(futures)/sample
+        pi = 4 * sum(ray.get(futures)) / sample
 
         end_time = perf_counter()
 
