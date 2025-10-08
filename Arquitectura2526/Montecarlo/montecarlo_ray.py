@@ -59,6 +59,7 @@ def main() -> None:
 
     n_tasks = args.t
     samples = [5000000, 10000000, 50000000]
+    times = []
     results = []
 
     for sample in samples:
@@ -76,14 +77,25 @@ def main() -> None:
         print(f"Pi: {pi}")
         print(f"Time taken: {end_time - start_time}")
 
+        times.append(end_time - start_time)
         results.append(pi)
 
     plt.figure()
-    plt.title(f"{n_tasks}")
-    plt.plot(samples, results)
-    plt.xlabel("Samples")
+    plt.title(f"Time taken with {n_tasks} tasks")
+    plt.plot(samples, times)
+    plt.xlabel("Number of Samples")
     plt.ylabel("Time (s)")
-    plt.savefig(f"./../Practica/Escenario1/figs/{n_tasks}.png")
+    plt.savefig(f"./../Practica/Escenario1/figs/time_{n_tasks}.png")
+
+    plt.figure()
+    plt.title(f"Evolution of estimated value of pi with diferent samples")
+    plt.plot(samples, results)
+    plt.axhline(y=3.1415926535, color='r', linestyle='--',
+                linewidth=2, label='y = π')
+    plt.legend()
+    plt.xlabel("Number of Samples")
+    plt.ylabel("Estimation of Pi")
+    plt.savefig(f"./../Practica/Escenario1/figs/pi_{n_tasks}.png")
 
     ray.shutdown()
 
