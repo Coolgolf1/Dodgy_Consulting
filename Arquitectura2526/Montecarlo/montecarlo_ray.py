@@ -49,7 +49,7 @@ def main() -> None:
 
     args = parser.parse_args()
 
-    ray.init()
+    ray.init(address="ray://0.0.0.0:10001")
 
     n_tasks = args.t
     samples = [5000000, 10000000, 50000000]
