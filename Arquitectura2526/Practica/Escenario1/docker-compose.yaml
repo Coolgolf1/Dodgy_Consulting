@@ -40,6 +40,18 @@ services:
     networks:
       - ray_net
 
+  ray-worker-3:
+    image: ${RAY_IMAGE}
+    container_name: ray-worker-3
+    env_file:
+      - .env
+    command: >
+      bash -c "ray start --address=ray-head:${REDISPORT} --redis-password=${REDISPASSWORD} --num-cpus=1 --block"
+    shm_size: 2g
+    cpuset: "0"
+    networks:
+      - ray_net
+
 networks:
   ray_net:
     driver: bridge
