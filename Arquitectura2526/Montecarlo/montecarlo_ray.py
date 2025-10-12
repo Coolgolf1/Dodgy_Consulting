@@ -12,14 +12,14 @@ Description:  This script performs a Monte Carlo simulation using the
               distribution.
 
 Usage:
-    python montecarlo_ray.py <num_samples>
+    python montecarlo_ray.py <num_tasks>
 
     Example:
-        python montecarlo_ray.py 1000000
+        python montecarlo_ray.py 12
 
 Arguments:
-    num_samples : int
-        The number of random samples to generate in the simulation.
+    num_tasks : int
+        The number of tasks for parallel computing.
 
 Dependencies:
     - Python >= 3.8
