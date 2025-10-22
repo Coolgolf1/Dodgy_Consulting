@@ -12,10 +12,10 @@ Description:  This script performs a Monte Carlo simulation using the
               distribution.
 
 Usage:
-    python montecarlo_ray.py <num_samples>
+    python montecarlo_dask.py <num_samples>
 
     Example:
-        python montecarlo_ray.py 1000000
+        python montecarlo_dask.py 1000000
 
 Arguments:
     num_samples : int
