@@ -97,7 +97,7 @@ def main() -> None:
     plt.ylabel("Estimation of Pi")
     plt.savefig(f"./../Practica/Escenario2/figs/pi_{n_tasks}.png")
 
-    client.shutdown()
+    
 
 
 def get_points_in_circle(n_samples: int) -> int:

@@ -55,6 +55,25 @@ services:
     networks:
       - dask-net
 
+  dask-worker-3:
+    image: daskdev/dask:latest
+    depends_on:
+      - dask-scheduler
+    environment:
+      - EXTRA_APT_PACKAGES=vim
+    command: dask-worker tcp://dask-scheduler:8786 --nthreads 1 --memory-limit 2GB
+    env_file:
+      - .env
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 2g
+    cpuset: "0"
+    container_name: dask-worker-3
+    networks:
+      - dask-net
+
 networks:
   dask-net:
     driver: bridge
