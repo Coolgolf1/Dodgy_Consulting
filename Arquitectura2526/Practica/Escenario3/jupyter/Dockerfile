@@ -3,7 +3,7 @@ FROM jupyter/base-notebook:latest
 USER root
 
 # Variables de entorno para Spark y PySpark
-ENV SPARK_VERSION=3.5.6
+ENV SPARK_VERSION=3.5.7
 ENV HADOOP_VERSION=3
 ENV SPARK_HOME=/opt/spark
 ENV JAVA_HOME=/usr/lib/jvm/java-11-openjdk-arm64
