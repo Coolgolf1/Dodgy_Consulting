@@ -44,60 +44,54 @@ services:
     container_name: spark-worker-1
     environment:
       - SPARK_ROLE=worker
+      - SPARK_MASTER_URL=spark://spark-master:7077
+      - SPARK_WORKER_CORES=1
+      - SPARK_WORKER_MEMORY=8G
+      - SPARK_WORKER_PORT=7078
+      - SPARK_WORKER_WEBUI_PORT=8081
+    cpuset: "0"
     volumes:
       - ./notebooks:/home/jovyan/work
     depends_on:
       - spark-master
-    ports:
-      - "8081:8081"
-    cpuset: "0"  # Limita a CPU 0
-    deploy:
-      resources:
-        limits:
-          cpus: "1.0"
-          memory: 2g
     networks:
       - cluster
 
   spark-worker-2:
-     build: ./spark
-     container_name: spark-worker-2
-     environment:
-       - SPARK_ROLE=worker
-     volumes:
-       - ./notebooks:/home/jovyan/work
-     depends_on:
-       - spark-master
-     ports:
-       - "8082:8081"
-     cpuset: "1"
-     deploy:
-       resources:
-         limits:
-           cpus: "1.0"
-           memory: 2g
-     networks:
-       - cluster
+    build: ./spark
+    container_name: spark-worker-2
+    environment:
+      - SPARK_ROLE=worker
+      - SPARK_MASTER_URL=spark://spark-master:7077
+      - SPARK_WORKER_CORES=1
+      - SPARK_WORKER_MEMORY=8G
+      - SPARK_WORKER_PORT=7079
+      - SPARK_WORKER_WEBUI_PORT=8082
+    cpuset: "1"
+    volumes:
+      - ./notebooks:/home/jovyan/work
+    depends_on:
+      - spark-master
+    networks:
+      - cluster
 
   spark-worker-3:
-     build: ./spark
-     container_name: spark-worker-3
-     environment:
-       - SPARK_ROLE=worker
-     volumes:
-       - ./notebooks:/home/jovyan/work
-     depends_on:
-       - spark-master
-     ports:
-       - "8083:8081"
-     cpuset: "0"
-     deploy:
-       resources:
-         limits:
-           cpus: "1.0"
-           memory: 2g
-     networks:
-       - cluster
+    build: ./spark
+    container_name: spark-worker-3
+    environment:
+      - SPARK_ROLE=worker
+      - SPARK_MASTER_URL=spark://spark-master:7077
+      - SPARK_WORKER_CORES=1
+      - SPARK_WORKER_MEMORY=8G
+      - SPARK_WORKER_PORT=7080
+      - SPARK_WORKER_WEBUI_PORT=8083
+    cpuset: "1"
+    volumes:
+      - ./notebooks:/home/jovyan/work
+    depends_on:
+      - spark-master
+    networks:
+      - cluster
 
   jupyter:
     build: ./jupyter
