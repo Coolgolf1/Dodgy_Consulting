@@ -35,9 +35,10 @@ Date:         2025-10-02
 ======================================================================
 """
 
+from datetime import datetime
 import os
 import random
-from dask.distributed import Client
+from pyspark.sql import SparkSession
 import argparse
 from time import perf_counter
 from dotenv import load_dotenv
@@ -51,11 +52,17 @@ def main() -> None:
 
     args = parser.parse_args()
 
-    load_dotenv("./../Practica/Escenario2/.env")
+    load_dotenv("./../Practica/Escenario3/.env")
 
-    port = os.getenv("DASKPORT")
+    port = os.getenv("SPARKPORT")
 
-    client = Client(f'localhost:{port}')
+    appdate = datetime.now().strftime("%m-%d-%Y %H:%M:%S")
+    appName = "-".join(["Procesamiento", appdate])
+
+    spark = SparkSession.builder.appName(appName).master(f"spark://spark-master:{port}").config(
+        "spark.executor.memory", "2g").config("spark.driver.memory", "1g").getOrCreate()
+
+    sc = spark.sparkContext
 
     n_tasks = args.t
     samples = [5000000, 10000000, 50000000]
@@ -67,10 +74,11 @@ def main() -> None:
 
         start_time = perf_counter()
 
-        futures = [client.submit(get_points_in_circle, sample//n_tasks).result()
-                   for _ in range(n_tasks)]
+        rdd = sc.parallelize(sample//n_tasks for _ in range(n_tasks))
 
-        pi = 4 * sum(futures) / sample
+        pi_values = rdd.map(lambda x: get_points_in_circle(x)).collect()
+
+        pi = 4 * sum(pi_values) / sample
 
         end_time = perf_counter()
 
@@ -85,7 +93,7 @@ def main() -> None:
     plt.plot(samples, times)
     plt.xlabel("Number of Samples")
     plt.ylabel("Time (s)")
-    plt.savefig(f"./../Practica/Escenario2/figs/time_{n_tasks}.png")
+    plt.savefig(f"./../Practica/Escenario3/figs/time_{n_tasks}.png")
 
     plt.figure()
     plt.title(f"Evolution of estimated value of pi with diferent samples")
@@ -95,7 +103,7 @@ def main() -> None:
     plt.legend()
     plt.xlabel("Number of Samples")
     plt.ylabel("Estimation of Pi")
-    plt.savefig(f"./../Practica/Escenario2/figs/pi_{n_tasks}.png")
+    plt.savefig(f"./../Practica/Escenario3/figs/pi_{n_tasks}.png")
 
 
 def get_points_in_circle(n_samples: int) -> int:
