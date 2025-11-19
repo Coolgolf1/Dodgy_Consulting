@@ -31,7 +31,7 @@ Functions:
     - main()
 
 Version:      1.0
-Date:         2025-10-02
+Date:         2025-11-19
 ======================================================================
 """
 
@@ -39,6 +39,7 @@ from datetime import datetime
 import os
 import random
 from pyspark.sql import SparkSession
+from typing import List, Tuple
 import argparse
 from time import perf_counter
 from dotenv import load_dotenv
@@ -59,8 +60,10 @@ def main() -> None:
     appdate = datetime.now().strftime("%m-%d-%Y %H:%M:%S")
     appName = "-".join(["Procesamiento", appdate])
 
-    spark = SparkSession.builder.appName(appName).master(f"spark://spark-master:{port}").config(
-        "spark.executor.memory", "2g").config("spark.driver.memory", "1g").getOrCreate()
+    spark = SparkSession.builder.appName(appName).getOrCreate()
+
+    # .master(f"spark://spark-master:{port}").config(
+    # "spark.executor.memory", "2g").config("spark.driver.memory", "1g").getOrCreate()
 
     sc = spark.sparkContext
 
@@ -74,11 +77,19 @@ def main() -> None:
 
         start_time = perf_counter()
 
-        rdd = sc.parallelize(sample, numSlices=n_tasks)
+        points = get_points(sample)
 
-        pi_values = rdd.map(lambda x: get_points_in_circle(x)).collect()
+        rdd = sc.parallelize(points, numSlices=n_tasks)
 
-        pi = 4 * sum(pi_values) / sample
+        rdd = rdd.map(lambda x: x[0]**2 + x[1]**2)
+
+        print(rdd.collect())
+
+        rdd = rdd.filter(lambda x: x <= 1)
+
+        pi_values = rdd.count()
+
+        pi = 4 * pi_values / sample
 
         end_time = perf_counter()
 
@@ -106,8 +117,8 @@ def main() -> None:
     plt.savefig(f"./../Practica/Escenario3/figs/pi_{n_tasks}.png")
 
 
-def get_points_in_circle(n_samples: int) -> int:
-    """Get points in circle using Monte Carlo simulation.
+def get_points(n_samples: int) -> List[Tuple[float, float]]:
+    """Get a list of points with a uniform distribution.
 
     Args:
         n_samples (int): Number of random samples to generate.
@@ -115,15 +126,13 @@ def get_points_in_circle(n_samples: int) -> int:
     Returns:
         float: Number of points.
     """
-    n_inside = 0
+    points = []
     for _ in range(n_samples):
         x = random.uniform(-1, 1)
         y = random.uniform(-1, 1)
+        points.append((x, y))
 
-        if x**2 + y**2 <= 1:
-            n_inside += 1
-
-    return n_inside
+    return points
 
 
 if __name__ == "__main__":
