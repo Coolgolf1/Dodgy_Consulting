@@ -74,7 +74,7 @@ def main() -> None:
 
         start_time = perf_counter()
 
-        rdd = sc.parallelize(sample//n_tasks for _ in range(n_tasks))
+        rdd = sc.parallelize(sample, numSlices=n_tasks)
 
         pi_values = rdd.map(lambda x: get_points_in_circle(x)).collect()
 
