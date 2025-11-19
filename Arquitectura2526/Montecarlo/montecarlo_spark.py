@@ -42,8 +42,6 @@ from pyspark.sql import SparkSession
 from typing import List, Tuple
 import argparse
 from time import perf_counter
-from dotenv import load_dotenv
-import matplotlib.pyplot as plt
 
 
 def main() -> None:
@@ -53,17 +51,10 @@ def main() -> None:
 
     args = parser.parse_args()
 
-    load_dotenv("./../Practica/Escenario3/.env")
-
-    port = os.getenv("SPARKPORT")
-
     appdate = datetime.now().strftime("%m-%d-%Y %H:%M:%S")
     appName = "-".join(["Procesamiento", appdate])
 
-    spark = SparkSession.builder.appName(appName).getOrCreate()
-
-    # .master(f"spark://spark-master:{port}").config(
-    # "spark.executor.memory", "2g").config("spark.driver.memory", "1g").getOrCreate()
+    spark = SparkSession.builder.appName(appName).master(f"spark://spark-master:7077").config("spark.executor.memory", "2g").config("spark.driver.memory", "1g").getOrCreate()
 
     sc = spark.sparkContext
 
@@ -77,13 +68,9 @@ def main() -> None:
 
         start_time = perf_counter()
 
-        points = get_points(sample)
+        rdd = sc.parallelize(range(sample), numSlices=n_tasks)
 
-        rdd = sc.parallelize(points, numSlices=n_tasks)
-
-        rdd = rdd.map(lambda x: x[0]**2 + x[1]**2)
-
-        print(rdd.collect())
+        rdd = rdd.map(lambda x: random.uniform(-1, 1)**2 + random.uniform(-1, 1)**2)        
 
         rdd = rdd.filter(lambda x: x <= 1)
 
@@ -98,42 +85,6 @@ def main() -> None:
 
         times.append(end_time - start_time)
         results.append(pi)
-
-    plt.figure()
-    plt.title(f"Time taken with {n_tasks} tasks")
-    plt.plot(samples, times)
-    plt.xlabel("Number of Samples")
-    plt.ylabel("Time (s)")
-    plt.savefig(f"./../Practica/Escenario3/figs/time_{n_tasks}.png")
-
-    plt.figure()
-    plt.title(f"Evolution of estimated value of pi with diferent samples")
-    plt.plot(samples, results)
-    plt.axhline(y=3.1415926535, color='r', linestyle='--',
-                linewidth=2, label='y = π')
-    plt.legend()
-    plt.xlabel("Number of Samples")
-    plt.ylabel("Estimation of Pi")
-    plt.savefig(f"./../Practica/Escenario3/figs/pi_{n_tasks}.png")
-
-
-def get_points(n_samples: int) -> List[Tuple[float, float]]:
-    """Get a list of points with a uniform distribution.
-
-    Args:
-        n_samples (int): Number of random samples to generate.
-
-    Returns:
-        float: Number of points.
-    """
-    points = []
-    for _ in range(n_samples):
-        x = random.uniform(-1, 1)
-        y = random.uniform(-1, 1)
-        points.append((x, y))
-
-    return points
-
 
 if __name__ == "__main__":
     try:
