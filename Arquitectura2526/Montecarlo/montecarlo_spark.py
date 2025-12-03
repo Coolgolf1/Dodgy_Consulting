@@ -59,7 +59,7 @@ def main() -> None:
     sc = spark.sparkContext
 
     n_tasks = args.t
-    samples = [5000000, 10000000, 50000000]
+    samples = [50000000, 100000000, 500000000]
     times = []
     results = []
 
